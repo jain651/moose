@@ -3426,8 +3426,8 @@ FEProblemBase::initPostprocessorData(const std::string & name)
 {
   ReporterName r_name(name, "value");
   if (!getReporterData().hasReporterValue<PostprocessorValue>(r_name))
-    getReporterData().declareReporterValue<PostprocessorValue, ReporterContext>(
-        r_name, REPORTER_MODE_UNSET);
+    _reporter_data.declareReporterValue<PostprocessorValue, ReporterContext>(r_name,
+                                                                             REPORTER_MODE_UNSET);
 }
 
 const PostprocessorValue &
@@ -3481,12 +3481,6 @@ FEProblemBase::getPostprocessorValueOlder(const std::string & name)
                   "'const' correctness, it has been replaced by getPostprocessorValueByName");
   const PostprocessorValue & value = getPostprocessorValueByName(name, 2);
   return const_cast<PostprocessorValue &>(value);
-}
-
-bool
-FEProblemBase::hasVectorPostprocessorByName(const std::string & name) const
-{
-  return hasUserObject(name);
 }
 
 const VectorPostprocessorValue &
