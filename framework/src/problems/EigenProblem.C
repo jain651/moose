@@ -444,3 +444,9 @@ EigenProblem::needInitializeEigenVector()
 {
   return _auto_initilize_eigen_vector && isNonlinearEigenvalueSolver();
 }
+
+void
+EigenProblem::initPetscOutput()
+{
+  _app.getOutputWarehouse().solveSetup();
+}
