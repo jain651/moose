@@ -447,7 +447,7 @@ NonlinearEigenSystem::getSNES()
   {
     EPS eps = solver->eps();
     SNES snes = nullptr;
-    Moose::SlepcSupport::epsGetSNES(eps, &snes);
+    Moose::SlepcSupport::mooseSlepcEPSGetSNES(eps, &snes);
     return snes;
   }
   else
