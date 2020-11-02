@@ -1084,9 +1084,6 @@ private:
   /// longer accessible
   bool _popped_final_mesh_generator;
 
-  /// Whether geometric relationship managers were already attached
-  bool _geometric_rms_attached;
-
   bool _profiling = false;
 
   // Allow FEProblemBase to set the recover/restart state, so make it a friend
