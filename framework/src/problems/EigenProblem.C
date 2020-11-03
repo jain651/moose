@@ -407,55 +407,6 @@ EigenProblem::initEigenvector(const Real initial_value)
   _nl_eigen->update();
 }
 
-#endif
-
-void
-EigenProblem::checkProblemIntegrity()
-{
-  FEProblemBase::checkProblemIntegrity();
-  _nl_eigen->checkIntegrity();
-}
-
-void
-EigenProblem::solve()
-{
-#if LIBMESH_HAVE_SLEPC
-  // Set necessary slepc callbacks
-  // We delay this call as much as possible because libmesh
-  // could rebuild matrices due to mesh changes or something else.
-  _nl_eigen->attachSLEPcCallbacks();
-#endif
-
-#if !PETSC_RELEASE_LESS_THAN(3, 12, 0)
-  // Master has the default database
-  if (!_app.isUltimateMaster())
-    PetscOptionsPush(_petsc_option_data_base);
-#endif
-
-  if (_solve)
-  {
-    TIME_SECTION(_solve_timer);
-
-    // Scale eigen vector if necessary
-    preScaleEigenVector();
-
-    _nl->solve();
-    _nl->update();
-
-    // Scale eigen vector if users ask
-    postScaleEigenVector();
-  }
-
-  // sync solutions in displaced problem
-  if (_displaced_problem)
-    _displaced_problem->syncSolutions();
-
-#if !PETSC_RELEASE_LESS_THAN(3, 12, 0)
-  if (!_app.isUltimateMaster())
-    PetscOptionsPop();
-#endif
-}
-
 void
 EigenProblem::preScaleEigenVector()
 {
@@ -521,6 +472,51 @@ EigenProblem::postScaleEigenVector()
 }
 
 void
+EigenProblem::checkProblemIntegrity()
+{
+  FEProblemBase::checkProblemIntegrity();
+  _nl_eigen->checkIntegrity();
+}
+
+void
+EigenProblem::solve()
+{
+  // Set necessary slepc callbacks
+  // We delay this call as much as possible because libmesh
+  // could rebuild matrices due to mesh changes or something else.
+  _nl_eigen->attachSLEPcCallbacks();
+
+#if !PETSC_RELEASE_LESS_THAN(3, 12, 0)
+  // Master has the default database
+  if (!_app.isUltimateMaster())
+    PetscOptionsPush(_petsc_option_data_base);
+#endif
+
+  if (_solve)
+  {
+    TIME_SECTION(_solve_timer);
+
+    // Scale eigen vector if necessary
+    preScaleEigenVector();
+
+    _nl->solve();
+    _nl->update();
+
+    // Scale eigen vector if users ask
+    postScaleEigenVector();
+  }
+
+  // sync solutions in displaced problem
+  if (_displaced_problem)
+    _displaced_problem->syncSolutions();
+
+#if !PETSC_RELEASE_LESS_THAN(3, 12, 0)
+  if (!_app.isUltimateMaster())
+    PetscOptionsPop();
+#endif
+}
+
+void
 EigenProblem::setNormalization(const PostprocessorName pp, const Real value)
 {
   _has_normalization = true;
@@ -531,7 +527,7 @@ EigenProblem::setNormalization(const PostprocessorName pp, const Real value)
 void
 EigenProblem::init()
 {
-#if !PETSC_RELEASE_LESS_THAN(3, 13, 0) && LIBMESH_HAVE_SLEPC
+#if !PETSC_RELEASE_LESS_THAN(3, 13, 0)
   // If matrix_free=true, this tells Libmesh to use shell matrices
   _nl_eigen->sys().use_shell_matrices(solverParams()._eigen_matrix_free);
   // We need to tell libMesh if we are using a shell preconditioning matrix
@@ -567,3 +563,5 @@ EigenProblem::initPetscOutput()
 {
   _app.getOutputWarehouse().solveSetup();
 }
+
+#endif
