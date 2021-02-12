@@ -2378,7 +2378,7 @@ MooseMesh::buildSideList()
 }
 
 std::vector<std::tuple<dof_id_type, unsigned short int, boundary_id_type>>
-MooseMesh::buildActiveSideList()
+MooseMesh::buildActiveSideList() const
 {
   return getMesh().get_boundary_info().build_active_side_list();
 }
@@ -3056,7 +3056,7 @@ MooseMesh::getPointLocator() const
 }
 
 void
-MooseMesh::buildFaceInfo()
+MooseMesh::buildFaceInfo() const
 {
   if (!_face_info_dirty)
     return;
@@ -3180,6 +3180,8 @@ MooseMesh::buildFaceInfo()
 const FaceInfo *
 MooseMesh::faceInfo(const Elem * elem, unsigned int side) const
 {
+  buildFaceInfo();
+
   auto it = _elem_side_to_face_info.find(std::make_pair(elem, side));
 
   if (it == _elem_side_to_face_info.end())
@@ -3249,8 +3251,7 @@ MooseMesh::deleteRemoteElements()
 void
 MooseMesh::cacheVarIndicesByFace(const std::vector<const MooseVariableBase *> & moose_vars)
 {
-  if (_face_info_dirty)
-    buildFaceInfo();
+  buildFaceInfo();
 
   for (FaceInfo & face : _all_face_info)
   {
