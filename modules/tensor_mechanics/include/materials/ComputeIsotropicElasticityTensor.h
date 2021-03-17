@@ -28,6 +28,7 @@ public:
   virtual void residualSetup() override;
 
 protected:
+  virtual void initQpStatefulProperties() override;
   virtual void computeQpElasticityTensor() override;
 
   /// Elastic constants

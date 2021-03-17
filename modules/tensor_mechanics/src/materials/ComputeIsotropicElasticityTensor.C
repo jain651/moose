@@ -71,6 +71,13 @@ ComputeIsotropicElasticityTensorTempl<is_ad>::ComputeIsotropicElasticityTensorTe
 
 template <bool is_ad>
 void
+ComputeIsotropicElasticityTensorTempl<is_ad>::initQpStatefulProperties()
+{
+  computeQpElasticityTensor();
+}
+
+template <bool is_ad>
+void
 ComputeIsotropicElasticityTensorTempl<is_ad>::residualSetup()
 {
   std::vector<Real> iso_const(2);
